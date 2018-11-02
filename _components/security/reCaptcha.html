@@ -1,0 +1,21 @@
+<script src="https://www.google.com/recaptcha/api.js?render={{ google.siteKey }}"></script>
+<script type="application/javascript">grecaptcha.ready(function () {
+    grecaptcha.execute('{{ google.siteKey }}', {action: "homepage"}).then(function (a) {
+        $.ajax({
+            type: "POST",
+            url: "{{ settings.baseUrl }}recaptcha.php",
+            data: {token: a},
+            dataType: "json",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            success: function (b) {
+                var $score = b.score;
+                if (b.score > 0.6) {
+                    $(document).find('*[type="submit"]').attr('disabled', false);
+				} else {
+                    $('form').submit(false);
+				}
+                console.info('Your score is: ' + $score);
+            }
+        })
+    })
+});</script>
