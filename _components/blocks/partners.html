@@ -1,0 +1,38 @@
+{% set partners= craft.entries.section('tamogatok')%}
+
+{% if partners is not empty %}
+
+<section class="partners">
+    <h2>{{ t['jokai_tamogatoi']|raw }}</h2>
+    <div class="slider_cont">
+        <div class="list">
+            <span data-index="foTamogato" class="init-partner">{{ t['fo_tamogatok']|raw }}</span>
+            <span data-index="gold">{{ t['arany_mecenas']|raw }}</span>
+            <span data-index="silver">{{ t['ezust_mecenas']|raw }}</span>
+            <span data-index="bronze">{{ t['bronz_mecenas']|raw }}</span>
+            <span data-index="other">{{ t['tovabbi_tamogatok']|raw }}</span>
+        </div>
+
+        <div class="swiper-container partners_slider">
+            <div class="swiper-wrapper">
+                {% for  partner in partners.all() %}
+                    {% set _hiddenElements = '' %}
+                       {% if partner.type != 'gold' %}
+                            {% set _hiddenElements = '_hidden' %}
+                       {% endif %}
+                    <a href="{% if partner.partnersUrl is not empty %}{{ partner.partnersUrl }} {% else %}javascript:;{% endif %}" target="_blank" class="swiper-slide {{partner.type}} {% if partner.type!='foTamogato' %} {{ partner.szint.one().tamogatoId }} {% endif %} {% if partner.partnersUrl is empty %}_default{% endif %} {{ _hiddenElements }}">
+                        {% if partner.logo is not empty %}
+                            <img src="{{ partner.logo.one().url }}" alt="{{ partner.logo.one().title }}">
+                        {% else %}
+                            <span>{{ partner.title }}</span>
+                        {% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</section>
+
+{% endif %}
