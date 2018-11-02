@@ -1,0 +1,10 @@
+<div class="matrix_gallery">
+    {% for  image in _elem.keplista.all() %}
+    <a href="{{ image.url }}" data-fancybox="news-gallery" data-caption="{{ image.title }}">
+        <img src="{{image.url('matrixGalleryTransform')}}" alt="{{image.title}}" >
+        {% if loop.index==4 and loop.length>4 %}
+        <span class="abs_number">+{{ loop.length-4 }}</span>
+        {% endif %}
+    </a>
+    {% endfor %}
+</div>
