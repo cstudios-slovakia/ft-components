@@ -1,0 +1,5 @@
+{% if _elem.szelesNagyKep is not empty %}
+    <div class="matrix-big-image">
+        <img src="{{ _elem.szelesNagyKep.one().url }}" class="big-image" alt="{{ _elem.szelesNagyKep.one().title }} - {{ settings.pageName }}">
+    </div>
+{% endif %}
