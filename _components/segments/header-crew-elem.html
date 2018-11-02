@@ -1,0 +1,37 @@
+{# REQUIRED VARIABLE _firstPlay #}
+{# REQUIRED VARIABLE _firstShows #}
+<!-- TIMELINE -->
+    <div class="timeline">
+        {% if _firstShows is not empty %}
+            {% set _oneShow = _firstShows[0] %}
+            {% if _oneShow.szereposztas is not empty %}
+                {% for _job in _oneShow.szereposztas %}
+                    {% if _job.szinesz is not empty %}
+                        {% set _member = _job.szinesz.one() %}
+                        <a href="{{ _member.url }}" class="name">
+                            <span>{{ _member.title }}</span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </div>
+<!-- /TIMELINE -->
+
+<!-- FOOTER -->
+    <div class="footer-gallery">
+        {% if _firstPlay.playGallery is not empty %}
+            {% set _firstGalleryImage = _firstPlay.playGallery.one() %}
+            <a data-fancybox="header-crew-fancybox" href="{{ _firstGalleryImage.url }}" data-caption="{{ _firstGalleryImage.title }}">
+                <span>{{ t['Galéria'] }}</span>
+            </a>
+            {% for _galleryImage in _firstPlay.playGallery %}
+                {% if not loop.first %}
+                    <a data-fancybox="header-crew-fancybox" class="_hidden" href="{{ _galleryImage.url }}" data-caption="{{ _galleryImage.title }}">
+                        <img src="{{ _galleryImage.url }}" alt="{{ _galleryImage.title }} - {{ settings.pageName }}"/>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+<!-- /FOOTER -->
