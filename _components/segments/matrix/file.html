@@ -1,0 +1,6 @@
+{# REQUIRED VARIABLE _matrixElem #}
+{% if _matrixElem.fajlNeve is not empty and _matrixElem.letoltendoFajl is not empty %}
+    <a href="{{ _matrixElem.letoltendoFajl.one().url }}" class="file" target="_blank">
+        <span>{{ _matrixElem.fajlNeve }}</span>
+    </a>
+{% endif %}
