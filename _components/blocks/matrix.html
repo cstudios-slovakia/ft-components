@@ -1,0 +1,13 @@
+<div class="matrix-content">
+    {% if entry.contentMatrix is not empty %}
+        {% for _matrixElem in entry.contentMatrix %}
+            {# _matrixElem.type #}
+            {% switch _matrixElem.type %}
+                {% case 'matrixContent' %}
+                    {% embed '_components/segments/matrix/content' %}{% endembed %}
+                {% case 'file' %}
+                    {% embed '_components/segments/matrix/file' %}{% endembed %}
+            {% endswitch %}
+        {% endfor %}
+    {% endif %}
+</div>
