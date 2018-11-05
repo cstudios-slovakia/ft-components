@@ -1,0 +1,83 @@
+{# REQUIRED VARIABLE _selectedPlay #}
+{# REQUIRED VARIABLE _level #}
+
+{% if _level == 1 %}
+    {% set _selectedPlay = _selectedPlay[0] %}
+    {% set _selectedShow = _selectedPlay.szindarab is not empty ? _selectedPlay.szindarab.one() : null %}
+    <!-- TIMELINE -->
+        <div class="timeline" data-type="{{ _selectedPlay.type }}">
+            {% if _selectedShow is not empty %}
+                {% for _job in _selectedShow.szereposztas %}
+                    {% if _job.szinesz is not empty %}
+                        {% set _member      = _job.szinesz.one() %}
+                        {% set _memberCover = _member.actorCover is not empty ? _member.actorCover.one().url : '' %}
+                        <a href="{{ _member.url }}" class="name member--name-trigger {% if loop.first %}_active{% endif %}" data-cover="{{ _memberCover }}">
+                            <span>{{ _member.title }}</span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    <!-- /TIMELINE -->
+
+    <!-- FOOTER -->
+        <div class="footer-gallery">
+            {% if _selectedPlay is not empty %}
+                {% if _selectedPlay.szindarab is not empty %}
+                    {% set _play = _selectedPlay.szindarab.one() %}
+                    {% if _play.playGallery is not empty %}
+                        {% set _firstGalleryImage = _play.playGallery.one() %}
+                        <a data-fancybox="header-crew-fancybox" href="{{ _firstGalleryImage.url }}" data-caption="{{ _firstGalleryImage.title }}">
+                            <span>{{ t['Galéria'] }}</span>
+                        </a>
+                        {% for _galleryImage in _play.playGallery %}
+                            {% if not loop.first %}
+                                <a data-fancybox="header-crew-fancybox" class="_hidden" href="{{ _galleryImage.url }}" data-caption="{{ _galleryImage.title }}">
+                                    <img src="{{ _galleryImage.url }}" alt="{{ _galleryImage.title }} - {{ settings.pageName }}"/>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    <!-- /FOOTER -->
+{% else %}
+    {% set _selectedPlay = _selectedPlay[0] %}
+    {% set _selectedShow = _selectedPlay.szindarab is not empty ? _selectedPlay.szindarab.one() : null %}
+
+    <div class="member-cover">
+        {% if _selectedPlay is not empty and _selectedShow.szereposztas is not empty %}
+            {% set _firstMember = _selectedShow.szereposztas.one() %}
+            {% if _firstMember.szinesz is not empty %}
+                {% set _firstMember = _firstMember.szinesz.one() %}
+                {% set _memberCover = _firstMember.actorCover is not empty ? _firstMember.actorCover.one().url : '' %}
+                <a href="{{ _firstMember.url }}" style="background: url({{ _memberCover }}) no-repeat;background-position: center;background-size: cover">
+                    <span>{{ t['Teljes életrajz'] }}</span>
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="info">
+        <div class="data">
+            <div>
+                <div>{{ t['Rendező'] }}:</div>
+                <div>{% if _selectedShow.rendezo is not empty %}{{ _selectedShow.rendezo.one().title }}{% else %}-{% endif %}</div>
+            </div>
+            <div>
+                <div>{{ t['Bemutató'] }}:</div>
+                <div>{% if _selectedPlay.datum is not empty %}{{ _selectedPlay.datum|date("d. F Y") }}{% else %}-{% endif %}</div>
+            </div>
+            {% if _selectedPlay.szindarab is not empty %}
+                {% set _play = _selectedPlay.szindarab.one() %}
+                <div>
+                    <div>{{ t['Műfaj'] }}:</div>
+                    <div>{% if _play.mufaj is not empty %}{{  _play.mufaj.one().title }}{% else %}-{% endif %}</div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="description">
+            <p>{{ _selectedShow.intro }}</p>
+        </div>
+    </div>
+{% endif %}
