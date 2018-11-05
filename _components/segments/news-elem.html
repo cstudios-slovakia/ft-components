@@ -1,0 +1,24 @@
+{# REQUIRED VARIABLE _article #}
+<!-- NEWS ELEM -->
+    <div class="news-elem">
+        <div class="cover">
+            {% set _coverImg = _article.cikkKep is not empty ? _article.cikkKep.one().url('indexNewsTransform') : '' %}
+            {% set _coverAlt = _article.cikkKep is not empty ? _article.cikkKep.one().title : '' %}
+            <img src="{{ _coverImg }}" alt="{{ _coverAlt }} - {{ settings.pageName }}">
+        </div>
+        <div class="body">
+            <div class="title">{{ _article.title }}</div>
+            <div class="date">{{ _article.postDate|date("d. F Y") }}</div>
+            <div class="description">
+                <p>{{ _article.articleIntro }}</p>
+            </div>
+            <div class="footer">
+                <div class="actions">
+                    <a href="{{ _article.url }}" class="btn btn-gradient">
+                        <span>{{ t['Bővebben'] }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- /NEWS ELEM -->
