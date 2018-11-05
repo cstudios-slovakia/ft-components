@@ -1,0 +1,58 @@
+{# REQUIRED VARIABLE _firstEloadas #}
+{# REQUIRED VARIABLE _firstPlay #}
+{# REQUIRED VARIABLE _firstShows #}
+
+{% if _firstPlay is not empty %}
+
+    <!-- TIMELINE -->
+        <div class="timeline {% if _firstShows[0].jegyvasarlas is empty %}_empty_ticket{% endif %}">
+            {% if _firstShows is not empty %}
+                {% for year, entriesInYear in _firstShows | group("datum.year") %}
+                    {% if year >= "now"|date("Y") %}
+                        <div class="block">
+                            <div class="name">
+                                <span>{{ year }}</span>
+                                {% if _firstEloadas.berlet is not empty %}
+                                    <div class="tickets">
+                                        {% for _berlet in _firstEloadas.berlet %}
+                                            <span title="{{ _berlet.title }}">{{ _berlet.listaNev }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% if entriesInYear is not empty %}
+                                <div class="list">
+                                    {% for month, entriesInMonth in entriesInYear | group("postDate|date('M')") %}
+                                        {% if entriesInMonth is not empty %}
+                                            {% for _monthElem in entriesInMonth %}
+                                                <a href="javascript:;" data-id="{{ _monthElem.id }}" class="content-level-1--trigger">
+                                                    <span>{{ _monthElem.datum|date('M') }} {{ _monthElem.datum|date('d') }}.</span>
+                                                    <span>{{ _monthElem.kezdes|date('H:i') }}</span>
+                                                </a>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    <!-- /TIMELINE -->
+
+    <!-- FOOTER -->
+        <div class="footer-buttons">
+            <a href="{{ _firstPlay.url }}" class="btn">
+                <span>{{ t['Bővebben'] }}</span>
+            </a>
+
+            {% if _firstShows[0].jegyvasarlas is not empty %}
+                <a href="{{ _firstShows[0].jegyvasarlas }}" class="btn btn-red">
+                    <span>{{ t['Jegyvásárlás'] }}</span>
+                </a>
+            {% endif %}
+        </div>
+    <!-- /FOOTER -->
+
+{% endif %}

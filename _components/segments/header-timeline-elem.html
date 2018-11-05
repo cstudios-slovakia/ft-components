@@ -1,0 +1,120 @@
+{# REQUIRED VARIABLE _firstEloadas #}
+{# REQUIRED VARIABLE _firstPlay #}
+{# REQUIRED VARIABLE _firstShows #}
+
+{% if _firstPlay is not empty %}
+    {% set _limit = 4 %}
+    {% set _counter = 1 %}
+    {% set jegyvasarlas = '' %}
+
+    {% if noLimit is defined %}
+        {% set _limit = 100 %}
+    {% endif %}
+
+    {% if _firstShows is not empty %}
+        {% if _firstShows[0].jegyvasarlas is empty %}
+            {% set jegyvasarlas = '_empty_ticket' %}
+        {% endif %}
+    {% endif %}
+
+    {% set _currentDate = date('Y') %}
+
+    <!-- TIMELINE -->
+        <div class="timeline {{ jegyvasarlas }}">
+            {% if _firstShows is not empty %}
+                {% for year, entriesInYear in _firstShows | group("datum.year") %}
+                    {% if year >= "now"|date("Y") %}
+                        <div class="block">
+                            <div class="name">
+                                <span>{{ year }}</span>
+                                {% if entriesInYear is not empty %}
+                                    <div class="list">
+                                        {% for month, entriesInMonth in entriesInYear | group("postDate|date('M')") %}
+                                            {% if entriesInMonth is not empty %}
+                                                {% for _monthElem in entriesInMonth %}
+                                                    {% if _monthElem.datum|date('n') >= _currentDate|date('n') %}
+                                                        {% set _isOld = true %}
+                                                        {% if _monthElem.datum|date('n') == _currentDate|date('n') %}
+                                                            {% if _monthElem.datum|date('j') <= _currentDate|date('j') %}
+                                                                {% set _isOld = false %}
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                        {% if _monthElem.berlet is not empty and _counter <= _limit and _isOld %}
+                                                            <div class="tickets" data-limit="{{ _counter }}">
+                                                                {% for _berlet in _monthElem.berlet %}
+                                                                    <span title="{{ _berlet.title }}">
+                                                                        {% if _berlet.listaNev is empty %}
+                                                                            {{ _berlet.title }}
+                                                                        {% else %}
+                                                                            {{ _berlet.listaNev }}
+                                                                        {% endif %}
+                                                                    </span>
+                                                                {% endfor %}
+                                                            </div>
+                                                            {% set _counter = _counter + 1 %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            {% set _counter = 1 %}
+                            {% if entriesInYear is not empty %}
+                                <div class="list">
+                                    {% for month, entriesInMonth in entriesInYear | group("postDate|date('M')") %}
+                                        {% if entriesInMonth is not empty %}
+                                            {% for _monthElem in entriesInMonth %}
+                                                {% if _monthElem.datum|date('n') >= _currentDate|date('n') %}
+                                                    {% set _isOld = true %}
+                                                    {% if _monthElem.datum|date('n') == _currentDate|date('n') %}
+                                                        {% if _monthElem.datum|date('j') <= _currentDate|date('j') %}
+                                                            {% set _isOld = false %}
+                                                        {% endif %}
+                                                    {% endif %}
+
+                                                    {% if _counter <= _limit and _isOld %}
+                                                        {% set _isActive = '' %}
+                                                        {% if entry.type == "eloadas" %}
+                                                            {% if entry.datum|date('Y') == year and entry.datum|date('M') == _monthElem.datum|date('M') and entry.datum|date('d') == _monthElem.datum|date('d') %}
+                                                                {% set _isActive = '_active' %}
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                        <a href="{{ _monthElem.url }}" data-id="{{ _monthElem.id }}" class="content-level-1--trigger {{ _isActive }}">
+                                                            <span>{{ _monthElem.datum|date('M') }} {{ _monthElem.datum|date('d') }}.</span>
+                                                            <span>{{ _monthElem.kezdes|date('H:i') }}</span>
+                                                        </a>
+                                                        {% set _counter = _counter + 1 %}
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    <!-- /TIMELINE -->
+
+    <!-- FOOTER -->
+        <div class="footer-buttons">
+            <a href="{{ _firstPlay.url }}" class="btn">
+                <span>{{ t['Bővebben'] }}</span>
+            </a>
+
+            {% if _firstShows[0].jegyvasarlas is not empty %}
+                <a href="{{ _firstShows[0].jegyvasarlas }}" class="btn btn-red">
+                    <span>{{ t['Jegyvásárlás'] }}</span>
+                </a>
+            {% endif %}
+        </div>
+    <!-- /FOOTER -->
+
+{% endif %}
