@@ -1,0 +1,18 @@
+{% set entryID  = craft.request.getParam('id') %}
+{% set level    = craft.request.getParam('level') %}
+{% set _locale  = craft.request.getParam('lang') %}
+
+{% if entryID is not empty %}
+    {# LOAD TRANSLATES #}
+        {% set tEntry = craft.entries.section('translates').limit(1) %}
+        {% set tEntry = tEntry[0].translateTable %}
+        {% set t = [] %}
+        {% for row in tEntry %}
+            {% set t = t|merge({(row.key): (row.string)}) %}
+        {% endfor %}
+
+    {% set _selectedPlay  = craft.entries.section('eloadasokLista').id(entryID) %}
+    {% set _level         = level %}
+
+    {% embed '_components/segments/header-timeline-crew' %}{% endembed %}
+{% endif %}
