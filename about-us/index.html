@@ -1,0 +1,63 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+<section class="crew_page about_us_page visible-left">
+    <div class="left">
+        <h1>{{ t['Rólunk írták']|raw }}</h1>
+    </div>
+
+    <div class="right">
+        {% set _aboutUsArticles = craft.entries.section('rolunkIrtak').limit(24) %}
+
+        {% paginate _aboutUsArticles as pageInfo, pageEntries %}
+        {% if pageEntries is not empty %}
+            <div class="articles-list">
+                {% for _aboutUsArticle in pageEntries %}
+                    {% set _articleFile = _aboutUsArticle.fajl is not empty ? _aboutUsArticle.fajl.one().url : 'javascript:;' %}
+                    <a href="{{ _articleFile }}" target="_blank">
+                        <div>
+                            <div class="title">{{ _aboutUsArticle.title }}</div>
+                            <div class="source">{{ _aboutUsArticle.forras }}</div>
+                            <div class="date">{{ _aboutUsArticle.sourceDatum|date("d. F Y") }}</div>
+                        </div>
+                        {% if _aboutUsArticle.fajl is not empty %}
+                            <button class="btn btn-gradient">
+                                <span>{{ t['Bővebben'] }}</span>
+                            </button>
+                        {% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="pagination_cont">
+            {% if pageInfo.prevUrl %}
+                <a class="arrow back" href="{{ pageInfo.prevUrl }}"></a>
+            {% endif %}
+            {% for page, url in pageInfo.getPrevUrls(2) %}
+                <a href="{{ url }}">{{ page }}</a>
+            {% endfor %}
+
+            <a class="current">{{ pageInfo.currentPage }}</a>
+
+            {% for page, url in pageInfo.getNextUrls(2) %}
+                <a href="{{ url }}">{{ page }}</a>
+            {% endfor %}
+
+            {% if pageInfo.totalPages - pageInfo.currentPage > 2 %}
+                <a>...</a>
+
+                <a href="{{ pageInfo.lastUrl }}">{{pageInfo.totalPages}}</a>
+            {% endif %}
+            {% if pageInfo.nextUrl %}
+                <a class="arrow next" href="{{ pageInfo.nextUrl }}"></a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% embed '_components/blocks/partners' %}{% endembed %}
+
+{% endblock %}
