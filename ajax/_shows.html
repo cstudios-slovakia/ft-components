@@ -1,0 +1,19 @@
+{% set entryID   = craft.request.getParam('id') %}
+{% set eloadasID = craft.request.getParam('eloadas') %}
+{% set _locale   = craft.request.getParam('lang') %}
+
+{% if entryID is not empty %}
+    {# LOAD TRANSLATES #}
+        {% set tEntry = craft.entries.section('translates').limit(1) %}
+        {% set tEntry = tEntry[0].translateTable %}
+        {% set t = [] %}
+        {% for row in tEntry %}
+            {% set t = t|merge({(row.key): (row.string)}) %}
+        {% endfor %}
+
+    {% set _firstPlay  = craft.entries.section('playList').id(entryID) %}
+    {% set _firstPlay  = _firstPlay[0] %}
+    {% set _firstShows = craft.entries.section('eloadasokLista').search('szindarab:' ~ _firstPlay) %}
+    {% set _firstEloadas = craft.entries.section('eloadasokLista').id(eloadasID).one() %}
+    {% embed '_components/segments/header-timeline-elem' %}{% endembed %}
+{% endif %}
