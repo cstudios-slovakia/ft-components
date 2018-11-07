@@ -1,0 +1,21 @@
+{% set _date    = craft.request.getParam('d') %}
+{% set _locale  = craft.request.getParam('lang') %}
+
+{% if _date is not empty %}
+
+    {# LOAD TRANSLATES #}
+        {% set tEntry = craft.entries.section('translates').limit(1) %}
+        {% set tEntry = tEntry[0].translateTable %}
+        {% set t = [] %}
+        {% for row in tEntry %}
+            {% set t = t|merge({(row.key): (row.string)}) %}
+        {% endfor %}
+
+    {% set _showsList = craft.entries.section('eloadasokLista').datum(_date|date('U')).limit(10) %}
+
+    {% if _showsList is not empty %}
+        {% for _show in _showsList %}
+            {% embed '_components/segments/show-elem' %}{% endembed %}
+        {% endfor %}
+    {% endif %}
+{% endif %}
