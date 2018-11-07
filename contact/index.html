@@ -1,0 +1,133 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+    <section class="crew_page contact-page">
+        <div class="left">
+            <h1>{{ t['Elérhetőségek']|raw }}</h1>
+
+            <div class="info">
+                <div class="title">KOMÁROMI<br>JÓKAI SZÍNHÁZ</div>
+                <address>
+                    Petõfi utca 1.<br>
+                    945 01 Komárno
+                </address>
+                <div class="phone">Központ - porta:</div>
+                <a href="tel:00421(35)7908116">+ 421 (35) 7908 116</a>
+            </div>
+        </div>
+        <div class="right">
+
+            <!-- GOOGLE MAP -->
+                <div class="google-map">
+                    <div id="container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2681.9342186631097!2d18.124057515978226!3d47.763330279195316!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476bad50ff3c65db%3A0x92b9ab12de6524a2!2zUGV0w7ZmaWhvIDI5MjQvMSwgOTQ1IDAxIEtvbcOhcm5v!5e0!3m2!1shu!2ssk!4v1543561304940" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+                    </div>
+                </div>
+            <!-- /GOOGLE MAP -->
+
+            <!-- CONTACT GRID -->
+                <div class="contact-grid">
+                    <div class="details">
+                        {% set _contactMatrix = entry.kontaktMatrix %}
+                        {% if _contactMatrix is not empty %}
+                            {% for _matrixElem in _contactMatrix %}
+                                {% if _matrixElem.type == 'szekciok' %}
+                                    <div class="section">
+                                        <div class="title">{{ _matrixElem.szekcionev }}</div>
+                                        {% if _matrixElem.kapcsolat is not empty %}
+                                            {% for _row in _matrixElem.kapcsolat %}
+                                                <div class="block">
+                                                    {% if _row.nev is not empty %}
+                                                        <div class="name">{{ _row.nev }}</div>
+                                                    {% endif %}
+
+                                                    {% if _row.reszleg is not empty %}
+                                                        <div>{{ _row.reszleg }}</div>
+                                                    {% endif %}
+
+                                                    {% if _row.telefonszam is not empty %}
+                                                        <div class="phone">
+                                                            {% set _phoneNumbers = _row.telefonszam|split(',') %}
+                                                            {% if _phoneNumbers is not empty %}
+                                                                <div>{{ t['Tel'] }}:</div>
+                                                                <div>
+                                                                    {% for _number in _phoneNumbers %}
+                                                                        <a href="tel: {{ _number }}">{{ _number }}</a>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if _row.eMail is not empty %}
+                                                        <div class="email">
+                                                            {% set _emailAddresses = _row.eMail|split(',') %}
+                                                            {% if _emailAddresses is not empty %}
+                                                                <div>{{ t['E-mail'] }}:</div>
+                                                                <div>
+                                                                    {% for _mail in _emailAddresses %}
+                                                                        <a href="mailto: {{ _mail }}">{{ _mail }}</a>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                        {% if _matrixElem.tovabbiInformaciok is not empty %}
+                                            <div class="additional">{{ _matrixElem.tovabbiInformaciok }}</div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif%}
+                    </div>
+                </div>
+            <!-- /CONTACT GRID -->
+
+            <!-- CONTACT FORM -->
+                {% if craft.app.session.hasFlash('notice') %}
+                    <div class="message-container">
+                        <p class="message notice">{{ craft.app.session.getFlash('notice') }}</p>
+                    </div>
+                {% elseif craft.app.session.hasFlash('error') %}
+                    <div class="message-container _error">
+                        <p class="message error">{{ craft.app.session.getFlash('error') }}</p>
+                    </div>
+                {% endif %}
+                <div class="contact-form">
+                    <div>{{ t['Lépjen kapcsolatba velünk!'] }}</div>
+                    <form method="post" action="">
+                        {{ csrfInput() }}
+                        <div>
+                            <input type="hidden" name="action" value="contact-form/send">
+                            <input type="text" name="fromName" placeholder="{{ t['Vezetéknév Keresztnév'] }}" required/>
+                            <input type="email" placeholder="{{ t['E-mail'] }}" name="fromEmail" required/>
+                            <input type="text" placeholder="{{ t['Tárgy'] }}" name="subject" required/>
+                        </div>
+                        <div>
+                            <textarea placeholder="{{ t['Üzenet'] }}" name="message" required></textarea>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-gradient">
+                                <span>{{ t['Küldés'] }}</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            <!-- /CONTACT FORM -->
+
+            {% embed '_components/blocks/matrix' %}{% endembed %}
+        </div>
+    </section>
+
+    <!-- PARTNERS SLIDER -->
+        <div class="partners-wrapper">
+            {% embed '_components/blocks/partners' %}{% endembed %}
+        </div>
+    <!-- /PARTNERS SLIDER -->
+
+{% endblock %}
