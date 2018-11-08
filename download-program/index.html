@@ -1,0 +1,379 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+    {% set _today = "now"|date("m/d/Y") %}
+    {% set params = {
+        section : 'playList',
+        limit : '3'
+    } %}
+    {% set _playsList = craft.entries(params) %}
+
+    {% set _today = "now"|date("m/d/Y") %}
+     {% set params2 = {
+        section : 'eloadasokLista',
+        limit : '3',
+        datum: '>=' ~  _today|date('U'),
+        order: 'datum desc'
+    } %}
+
+    {% set _playsList2 = craft.entries(params2) %}
+
+    {% if entry.sliderEloadasok is not empty %}
+        {% set _playsList2 = entry.sliderEloadasok %}
+    {% endif %}
+
+    {# GET THE FIRST SHOWS #}
+    {% if _playsList2 is not empty %}
+        {% if _playsList2.one().szindarab is not empty %}
+            {% set _firstEloadas  = _playsList2.one() %}
+            {% set _firstPlay     = _firstEloadas.szindarab.one() %}
+            {% set _firstShows = craft.entries.section('eloadasokLista').search('szindarab:' ~ _firstPlay)  %}
+        {% else %}
+            {% set _firstEloadas = null %}
+            {% set _firstPlay    = null %}
+            {% set _firstShows   = null  %}
+        {% endif %}
+    {% endif %}
+
+    <!-- INDEX HEADER -->
+        <div class="index-header {% if _firstShows is empty %}_empty{% endif %} {% if entry.sliderEloadasok is empty %}_hidden{% endif %}">
+            <!-- SLIDER -->
+                <div id="slider-container">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+
+                            {% if _playsList2 is not empty %}
+                                {% for _play in _playsList2 %}
+                                    {% set _currentPlay = _play.szindarab is not empty ? _play.szindarab.one() : '' %}
+                                    <div class="swiper-slide play-id-{{ _currentPlay.id }}" data-play-index="{{ loop.index }}" data-play-id="{{ _currentPlay.id }}" data-eloadas-id="{{ _play.id }}">
+                                        <!-- SWIPE ELEM -->
+                                            <div class="swipe-elem">
+                                                {% set _playCoverUrl = _currentPlay.playCover is not empty ? _currentPlay.playCover.one().url : settings.baseUrl ~ 'assets/images/show_default_image.jpg' %}
+                                                {% set _playCoverAlt = _currentPlay.playCover is not empty ? _currentPlay.playCover.one().title : '' %}
+                                                <img src="{{ _playCoverUrl }}" alt="{{ _playCoverAlt }} - {{ settings.pageName }}"/>
+                                            </div>
+                                        <!-- /SWIPE ELEM -->
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    <!-- CONTROLS -->
+                        <div class="controls">
+                            <div class="latest">
+
+                                <div id="index-controls-slider">
+                                    <div class="swiper-button-prev"></div>
+                                    <div class="swiper-container">
+                                        <div class="swiper-wrapper">
+                                            {% if _playsList2 is not empty %}
+                                                {% for _play in _playsList2 %}
+                                                    <div class="swiper-slide">
+                                                        {% set _currentPlay = _play.szindarab is not empty ? _play.szindarab.one() : '' %}
+                                                        {% set _rendezo = _currentPlay.rendezo is not empty ? _currentPlay.rendezo.one().title : '-' %}
+                                                        <div class="{% if loop.first %}_active{% endif %} play-title play-elem-{{ _currentPlay.id }}" data-id="{{ _currentPlay.id }}" data-eloadas-id="{{ _play.id }}">
+                                                            <div class="title">{{ _play.nev }}</div>
+                                                            <div class="description">
+                                                                <p>{{ _rendezo }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="swiper-button-next"></div>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- /CONTROLS -->
+                </div>
+            <!-- /SLIDER -->
+
+            <!-- SHOW TIMELINE -->
+                <div id="index-timeline">
+                    <!-- LIST -->
+                        <div class="timeline-list _index">
+                             <div class="title">{{ t['Időpontok'] }}</div>
+                            {% embed '_components/segments/header-timeline-elem' %}{% endembed %}
+                        </div>
+                    <!-- /LIST -->
+
+                    <!-- CREW LIST -->
+                        <div class="crew-list">
+                            <div class="members">
+                                <div class="title">{{ t['Szereposztás'] }}</div>
+                                {% embed '_components/segments/header-crew-elem' %}{% endembed %}
+                            </div>
+                            <div class="show-info">
+                                <div class="member-cover">
+                                    <a href="" style="background: url() no-repeat;background-position: center;background-size: cover">
+                                        <span>{{ t['Teljes életrajz'] }}</span>
+                                    </a>
+                                </div>
+                                <div class="info">
+                                    <div class="data">
+                                        <div>
+                                            <div>{{ t['Rendező'] }}:</div>
+                                            <div>-</div>
+                                        </div>
+                                         <div>
+                                            <div>{{ t['Bemutató'] }}:</div>
+                                            <div>-</div>
+                                        </div>
+                                        <div>
+                                            <div>{{ t['Műfaj'] }}:</div>
+                                            <div>-</div>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- /CREW LIST -->
+                </div>
+            <!-- /SHOW TIMELINE -->
+        </div>
+    <!-- /INDEX HEADER -->
+
+    <!-- ACTUAL SHOWS -->
+        <div class="actual-shows">
+            <h2 class="page-sub-title">{{ t['Aktuális program'] }}</h2>
+                {% set _today = "now"|date("m/d/Y") %}
+                {% set _firstDate = '' %}
+                {% set params = {
+                    section : 'eloadasokLista',
+                    datum: '>=' ~  _today|date('U'),
+                    limit : '20',
+                    order: 'datum asc'
+                } %}
+                {% set _showsList = craft.entries(params) %}
+
+            <div class="inner">
+                <div class="show-timeline">
+
+                    {% if _showsList is not empty %}
+                        <!-- SLIDER CONTAINER -->
+                            <div id="timeline-swiper">
+
+                                <div class="swiper-container">
+                                    <div class="swiper-wrapper">
+                                        {% set dates = [] %}
+                                        {% for _timeElem in _showsList %}
+                                            {% if _firstDate == '' %}
+                                                {% set _firstDate = _timeElem.datum %}
+                                            {% endif %}
+                                            {% if _timeElem.datum|date('U') not in dates %}
+                                                {% set dates = dates|merge([_timeElem.datum|date('U')]) %}
+                                                <div class="swiper-slide">{% embed '_components/segments/timeline-elem' %}{% endembed %}</div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <!-- CONTROLLERS -->
+                                    <div class="controllers">
+                                        <div class="swiper-button-prev"></div>
+                                        <div class="swiper-button-next"></div>
+                                    </div>
+                                <!-- /CONTROLLERS -->
+                            </div>
+                        <!-- /SLIDER CONTAINER -->
+                    {% endif %}
+
+                </div>
+
+                <div class="empty-show-list">
+                    {% embed '_components/segments/show-elem--empty' %}{% endembed %}
+                </div>
+
+                <div class="show-list">
+                   {% if _firstDate is defined %}
+                        {% set _showsList = craft.entries.section('eloadasokLista').datum(_firstDate).limit(10) %}
+
+                        {% if _showsList is not empty %}
+                            {% for _show in _showsList %}
+                                {% embed '_components/segments/show-elem' %}{% endembed %}
+                            {% endfor %}
+                        {% endif %}
+                   {% endif %}
+                </div>
+
+                {% if settings.aktualisMusor is not empty %}
+                    <a href="{{ settings.aktualisMusor.one().url }}" target="_blank" class="btn btn-red" download>
+                        <span>{{ t['Aktuális műsor letöltése'] }}</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    <!-- /ACTUAL SHOWS -->
+
+    <!-- NEWS/SHOWS -->
+        <div class="news-shows" id="index-news-shows">
+            <h2 class="news-title">{{ t['hírek/<br>előadások']|raw }}</h2>
+
+            <!-- NEWS LIST -->
+                <div class="news-list">
+                    <div>
+                        {% set _news = craft.entries.section('hirek').limit(3).orderBy('postDate desc') %}
+                        {% if _news is not empty %}
+                            {% for _article in _news %}
+                                {% embed '_components/segments/news-elem' %}{% endembed %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <a href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/news'] }}" class="read-more">
+                        <span>{{ t['Régebbi hírek'] }}</span>
+                    </a>
+                </div>
+            <!-- /NEWS LIST -->
+
+            <div class="see-more">
+
+                {# eventDate : '>=' ~ 'now', #}
+                    {% set _latestPlay = {
+                        section : 'playList',
+                        order : 'datum asc',
+                        limit : '1'
+                    } %}
+
+                {% set _latestPlay = craft.entries(_latestPlay) %}
+                {% if _latestPlay is not empty %}
+                    {% if _latestPlay[0].szindarab is not empty %}
+                        {% set szindarab = _latestPlay[0].szindarab.one() %}
+                    {% endif %}
+
+                    <div>
+                        <div class="info">
+                            <div class="title">{{ t['Mit<br>láthat?']|raw }}</div>
+                            <div class="date"></div>
+
+                            <div class="controls">
+                                {% if craft.entries.section('playList')|length > 1 %}
+                                    <!-- HIDDEN SLIDER -->
+                                        <div class="swiper-container">
+                                            <div class="swiper-wrapper">
+                                                {% set _playList = {
+                                                    section : 'playList',
+                                                    order : 'datum asc',
+                                                } %}
+                                                {% set _playList = craft.entries(_playList) %}
+
+                                                {% if _playList is not empty %}
+                                                    {% for _play in _playList %}
+                                                        {% set _cover = _play.playPoster is not empty ? _play.playPoster.one().url('indexPlayCoverTransform') : settings.baseUrl ~ 'assets/images/show_cover_default.jpg' %}
+                                                        {% set _alt   = _play.playPoster is not empty ? _play.playPoster.one().title : '' %}
+
+                                                        <div data-type="{{ _play.type }}" class="swiper-slide"
+                                                            data-date="{{ _play.datum|date("d. F Y") }}"
+                                                            data-title="{{ _play.title }}"
+                                                            data-cover="{{ _cover }}"
+                                                            data-cover-alt="{{ _alt }}"
+                                                            data-intro="{{ _play.intro }}"
+                                                            data-url="{{ _play.url }}"
+                                                            data-length-h="{{ _play.idotartamOra }}"
+                                                            data-length-m="{{ _play.idotartamPerc }}"
+                                                        ></div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    <!-- /HIDDEN SLIDER -->
+                                    <div>
+                                        <button class="prev-w-icon">
+                                            <span>{{ t['Előző'] }}</span>
+                                        </button>
+                                        <button class="next-w-icon">
+                                            <span>{{ t['Következő'] }}</span>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="show-title">{{ _latestPlay[0].title }}</div>
+                        </div>
+                        <div class="cover">
+                            {% set _cover = _latestPlay[0].playPoster is not empty ? _latestPlay[0].playPoster.one().url('indexPlayCoverTransform') : '' %}
+                            {% set _alt   = _latestPlay[0].playPoster is not empty ? _latestPlay[0].playPoster.one().title : '' %}
+                            <img src="{{ _cover }}" alt="{{ _alt }} - {{ settings.pageName }}"/>
+                        </div>
+                    </div>
+
+                    <!-- SHOW BODY -->
+                        <div class="body">
+                            <div>
+                                <div class="description">
+                                    <p>{{ _latestPlay[0].intro }}</p>
+                                </div>
+                                <div class="info">
+                                    {% if _latestPlay[0].idotartamOra is not empty %}
+                                        <div>
+                                            <img src="{{ settings.baseUrl }}assets/images/svg/clock-primary.svg" alt="Time - {{ settings.pageName }}"/>
+                                            <div class="context">{{ t['Időtartam'] }}: <strong>{% if _latestPlay[0].idotartamOra is not empty %} {{ _latestPlay[0].idotartamOra }} {% endif %}</strong> {{ t['óra'] }} {% if _latestPlay[0].idotartamPerc is not empty %}<strong>{{ _latestPlay[0].idotartamPerc }}</strong> {{ t['perc'] }} {% endif %}</div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="actions">
+                                {% if _latestPlay[0].jegyvasarlas is not empty %}
+                                    <a href="" class="btn btn-red">
+                                        <span>{{ t['Jegyvásárlás'] }}</span>
+                                    </a>
+                                {% endif %}
+                                <a href="{{ _latestPlay[0].url }}" class="btn btn-gradient btn-primary">
+                                    <span>{{ t['Bővebben'] }}</span>
+                                </a>
+                            </div>
+                        </div>
+                    <!-- /SHOW BODY -->
+                {% endif %}
+            </div>
+        </div>
+    <!-- /NEWS/SHOWS -->
+
+    <!-- NEWSLETTER / MOVIE -->
+        <div class="newsletter-movie">
+            <div class="newsletter">
+                <div>
+                    <form method="post" action="">
+                        {{ csrfInput() }}
+                        <h3>{{ t['Feliratkozás hírlevélre'] }}</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+                        <input type="hidden" name="action" value="contact-form/send">
+                        <input type="email" placeholder="E-mail cím" name="fromEmail" required>
+                        <input type="hidden" placeholder="" value="Newsletter subscription" name="message" required>
+                        <button class="btn btn-gradient" type="submit" disabled>
+                            <span>{{ t['Elküldöm'] }}</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="movie">
+                <a href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/predstavenia/mesiac'] }}?t=2" class="rotated-btn">
+                    <img src="{{ settings.baseUrl }}assets/images/icons/arrow-right--colored.png" alt="Arrow - {{ settings.pageName }}"/>
+                    <span>{{ t['Filmklub'] }}</span>
+                </a>
+
+                <img src="{{ settings.baseUrl }}assets/images/slider/slider-demo-2.png" alt="Movie - {{ settings.pageName }}"/>
+
+                <a href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/predstavenia/mesiac'] }}?t=2" class="btn btn-gradient">
+                    <span>{{ t['Belépés'] }}</span>
+                </a>
+            </div>
+        </div>
+    <!-- /NEWSLETTER / MOVIE -->
+
+    <!-- PARTNERS SLIDER -->
+        <div class="partners-wrapper">
+            {% embed '_components/blocks/partners' %}{% endembed %}
+        </div>
+    <!-- /PARTNERS SLIDER -->
+
+{% endblock %}
