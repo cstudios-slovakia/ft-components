@@ -1,0 +1,63 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+    <section class="crew_page text-page ticket-page visible-left">
+        <div class="left">
+            <h1>{{ t['Jegyárak']|raw }}</h1>
+        </div>
+        <div class="right">
+
+            <!-- TABLES -->
+                <div class="tables">
+
+                    {% if entry.estiEloadasok is not empty %}
+                        <table>
+                            <thead>
+                                <th>{{ t['Esti előadások'] }}</th>
+                                <th>{{ t['Jegyár'] }}</th>
+                                <th>{{ t['Kedvezményes jegyár *'] }}</th>
+                            </thead>
+                            {% for row in entry.estiEloadasok %}
+                                <tr>
+                                    <td>{{ row.estiEloadasok }}</td>
+                                    <td>{{ row.jegyar }}</td>
+                                    <td>{{ row.kedvezmenyesJegyar }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+
+                    {% if entry.estiEloadasokonKivul is not empty %}
+                        <table>
+                            <thead>
+                                <th>{{ t['Esti előadásokon kívül'] }}</th>
+                                <th>{{ t['Jegyár'] }}</th>
+                                <th>{{ t['Kedvezményes jegyár *'] }}</th>
+                            </thead>
+                            {% for row in entry.estiEloadasokonKivul %}
+                                <tr>
+                                    <td>{{ row.estiEloadasokonKivul }}</td>
+                                    <td>{{ row.jegyar }}</td>
+                                    <td>{{ row.kedvezmenyesJegyar }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+
+
+                </div>
+            <!-- /TABLES -->
+
+            {% embed '_components/blocks/matrix' %}{% endembed %}
+        </div>
+    </section>
+
+    <!-- PARTNERS SLIDER -->
+        <div class="partners-wrapper">
+            {% embed '_components/blocks/partners' %}{% endembed %}
+        </div>
+    <!-- /PARTNERS SLIDER -->
+
+{% endblock %}
