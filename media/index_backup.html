@@ -1,0 +1,57 @@
+{% extends "_layout" %}
+
+{% block content %}
+
+<section class="crew_page videos_page about_us_page visible-left">
+    <div class="left">
+        {% if craft.request.getParam('t') == 'video' %}
+            <h1>{{ t['Videók']|raw }}</h1>
+        {% else %}
+            <h1>{{ t['Fotóletöltés']|raw }}</h1>
+        {% endif %}
+    </div>
+    <div class="right">
+        {% if craft.request.getParam('t') == 'video' %}
+            {% set _videos = craft.entries.section('videok') %}
+            {% if _videos is not empty %}
+                <div class="videos-list">
+                    <div class="list">
+                        {% for _video in _videos %}
+                            {% set _videoAssetUrl  = _video.videoUrl %}
+                            {% set _youtubeVideoID = _videoAssetUrl | youtubeId %}
+                            <a data-fancybox="{{ _youtubeVideoID }}" href="{{ _videoAssetUrl }}">
+                                <div class="">
+                                    <div class="cover">
+                                        <img src="http://img.youtube.com/vi/{{ _youtubeVideoID }}/0.jpg" alt="{{ _youtubeVideoID }} - {{ settings.pageName }}"/>
+                                    </div>
+                                    <div class="title">{{ _video.title }}</div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            {% set _filesToDownload = craft.entries.section('fotkyNaStiahnutie') %}
+            {% if _filesToDownload is not empty %}
+                <div class="articles-list">
+                    {% for _file in _filesToDownload %}
+                        <a href="{% if _file.letoltendoFajl is not empty %}{{ _file.letoltendoFajl.one().url }}{% else %}javascript:;{% endif %}" class="{% if _file.letoltendoFajl is empty %}_empty{% endif %}">
+                            <div>
+                                <div class="title">{{ _file.title }}</div>
+                                <div class="source">{{ _file.stiahnutieLeiras }}</div>
+                            </div>
+                            {% if _file.letoltendoFajl is not empty %}
+                                <button class="btn btn-gradient">
+                                    <span>{{ t['Letöltés'] }}</span>
+                                </button>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
