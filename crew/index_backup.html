@@ -1,0 +1,76 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+<section class="crew_page visible-left">
+    <div class="left">
+        <h1>{{ t['Munkatársak']|raw }}</h1>
+
+        {% set crew= craft.categories.group('munkatarsak') %}
+        {% set _type = craft.request.getParam('t') %}
+
+        {% if crew is not empty %}
+            {% for crew_type in crew.all() %}
+                <a class="{% if _type == crew_type.slug %}_active{% endif %}" href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/zamestnanci'] }}?t={{ crew_type.slug }}">{{ crew_type }}</a>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="right">
+        <div class="avatars_cont">
+            {% if _type is not empty %}
+                {% set __type = craft.categories.group('munkatarsak').search(_type) %}
+                {% set avatars= craft.entries.section('munkatarsak').relatedTo(__type).limit(99).orderBy('title asc') %}
+            {% else %}
+                {% set avatars= craft.entries.section('munkatarsak').limit(99).orderBy('title asc') %}
+            {% endif %}
+
+            {% paginate avatars as pageInfo, pageEntries %}
+
+            {% if pageEntries is not empty %}
+                {% for avatar in pageEntries %}
+
+                    <a href="{{ avatar.url }}" class="avatar_box type-{{ _type }}">
+                        {% if avatar.actorCover is not empty %}
+                            <img src="{{ avatar.actorCover.one().url }}" alt="{{ avatar.title }}">
+                        {% else %}
+                            <img class="_empty" src="{{ settings.baseUrl }}assets/images/crew-placeholder.jpg" alt="{{ avatar.title }} - {{ settings.pageName }}">
+                        {% endif %}
+                        <h2>{{ avatar.title }}</h2>
+                        <h3>{{ avatar.nevSuffix }}</h3>
+                    </a>
+
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="pagination_cont _hidden">
+            {% if pageInfo.prevUrl %}
+                <a class="arrow back" href="{{ pageInfo.prevUrl }}{% if _type is not empty %}?t={{ _type }}{% endif %}"></a>
+            {% endif %}
+            {% for page, url in pageInfo.getPrevUrls(2) %}
+                <a href="{{ url }}{% if _type is not empty %}?t={{ _type }}{% endif %}">{{ page }}</a>
+            {% endfor %}
+
+            <a class="current">{{ pageInfo.currentPage }}</a>
+
+            {% for page, url in pageInfo.getNextUrls(2) %}
+                <a href="{{ url }}{% if _type is not empty %}?t={{ _type }}{% endif %}">{{ page }}</a>
+            {% endfor %}
+
+            {% if pageInfo.totalPages - pageInfo.currentPage > 2 %}
+                <a>...</a>
+
+                <a href="{{ pageInfo.lastUrl }}{% if _type is not empty %}?t={{ _type }}{% endif %}">{{pageInfo.totalPages}}</a>
+            {% endif %}
+            {% if pageInfo.nextUrl %}
+                <a class="arrow next" href="{{ pageInfo.nextUrl }}{% if _type is not empty %}?t={{ _type }}{% endif %}"></a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% embed '_components/blocks/partners' %}{% endembed %}
+
+{% endblock %}

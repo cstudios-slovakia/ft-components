@@ -1,0 +1,76 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+    <section class="crew_page text-page ticket-page invoice-page visible-left">
+        <div class="left">
+            <h1>{{ t['Számlák']|raw }}</h1>
+        </div>
+        <div class="right">
+
+            <div class="tables">
+                <table>
+                    <thead>
+                        <th>{{ t['Číslo'] }}</th>
+                        <th>{{ t['Dodávateľ'] }}</th>
+                        <th>{{ t['Adresa'] }}</th>
+                        <th>{{ t['IČO'] }}</th>
+                        <th>{{ t['Predmet'] }}</th>
+                        <th>{{ t['Suma s DPH'] }}</th>
+                        <th>{{ t['Dátum'] }}</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        {% set _invoiceList = craft.entries.section('szamlak').limit(30) %}
+                        {% paginate _invoiceList as pageInfo, pageEntries %}
+                            {% if _invoiceList is not empty %}
+                                {% for _invoice in _invoiceList %}
+                                    <tr>
+                                        <td>{{ loop.index }}.</td>
+                                        <td>{{ _invoice.title }}</td>
+                                        <td>{{ _invoice.cim }}</td>
+                                        <td>{{ _invoice.ico }}</td>
+                                        <td>{{ _invoice.targy }}</td>
+                                        <td>{{ _invoice.osszegAfaVal }}</td>
+                                        <td>{{ _invoice.invoiceDatum|date("d. F Y") }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination_cont">
+                {% if pageInfo.prevUrl %}
+                    <a class="arrow back" href="{{ pageInfo.prevUrl }}"></a>
+                {% endif %}
+                {% for page, url in pageInfo.getPrevUrls(2) %}
+                    <a href="{{ url }}">{{ page }}</a>
+                {% endfor %}
+
+                <a class="current">{{ pageInfo.currentPage }}</a>
+
+                {% for page, url in pageInfo.getNextUrls(2) %}
+                    <a href="{{ url }}">{{ page }}</a>
+                {% endfor %}
+
+                {% if pageInfo.totalPages - pageInfo.currentPage > 2 %}
+                    <a>...</a>
+
+                    <a href="{{ pageInfo.lastUrl }}">{{pageInfo.totalPages}}</a>
+                {% endif %}
+                {% if pageInfo.nextUrl %}
+                    <a class="arrow next" href="{{ pageInfo.nextUrl }}"></a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- PARTNERS SLIDER -->
+        <div class="partners-wrapper">
+            {% embed '_components/blocks/partners' %}{% endembed %}
+        </div>
+    <!-- /PARTNERS SLIDER -->
+
+{% endblock %}
