@@ -1,0 +1,14 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+<section class="crew_page visible-left">
+   <div class="under-development">
+       <div>{{ t['Under construction'] }}</div>
+   </div>
+</section>
+
+{% embed '_components/blocks/partners' %}{% endembed %}
+
+{% endblock %}
