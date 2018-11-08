@@ -1,0 +1,115 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+<section class="crew">
+    <div class="head">
+        <div>
+            <h1>{{ entry.title }}</h1>
+            <h2>{{ entry.nevSuffix }}</h2>
+
+            {% if entry.foglalkozas is not empty %}
+                <p class="italic">
+                    {% for  profession in entry.foglalkozas.all() %}
+                        {% if not loop.last %}
+                            {{ profession.title }},
+                        {% else %}
+                            {{ profession.title }}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            {% endif %}
+
+            <!--  Only for mobil version  -->
+                {% if entry.actorCover is not empty %}
+                    <img class="mobil" src="{{ entry.actorCover.one().url }}" alt="{{ entry.actorCover.one().title }}">
+                {% else %}
+                    <img class="mobil" src="{{ settings.baseUrl }}assets/images/crew-placeholder.jpg" alt="{{ entry.title }} - {{ settings.pageName }}">
+                {% endif %}
+            <!--  -->
+
+            <div class="line"></div>
+
+            {% if entry.dijak is not empty %}
+                <p class="colored">{{ t['dijak']|raw }}</p>
+                {{ entry.dijak }}
+            {% endif %}
+
+            <div class="abs_line"></div>
+        </div>
+
+        <div>
+            {% if entry.birthDate is not empty %}
+                <p class="colored">{{ t['szuletett']|raw }}</p>
+                <p>{{ entry.birthDate }}</p>
+            {% endif %}
+            <br>
+            {% if entry.eletrajz is not empty %}
+                <p class="colored">{{ t['eletrajz']|raw }}</p>
+                <div class="listing">
+                    {{ entry.eletrajz }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div>
+            {% if entry.actorCover is not empty  %}
+                <img src="{{ entry.actorCover.one().url }}" alt="{{ entry.actorCover.one().title }}">
+            {% else %}
+                <img src="{{ settings.baseUrl }}assets/images/crew-placeholder.jpg" alt="{{ entry.title }} - {{ settings.pageName }}">
+            {% endif %}
+        </div>
+
+    </div>
+
+    {% if entry.fontosabbSzerepek is not empty %}
+    {% set first_elem= entry.fontosabbSzerepek.one() %}
+
+    <p class="colored">{{ first_elem.blockTitle }}</p>
+    <div class="column_style">
+        {{ first_elem.blockContent }}
+        <div class="abs_line"></div>
+        <div class="abs_line two"></div>
+        <div class="abs_btn_cont">
+            <a class="btn"><span>{{ t['Bővebben']|raw }}</span></a>
+        </div>
+    </div>
+
+    {% if entry.fontosabbSzerepek|length > 1 %}
+    <div class="others">
+    {% for  other in entry.fontosabbSzerepek.all() %}
+        {% if not loop.first %}
+            <div>
+                <p class="colored">{{ other.blockTitle }}</p>
+                {{ other.blockContent }}
+            </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+    {% endif %}
+
+    {% endif %}
+</section>
+
+{% if entry.galeria is not empty %}
+<section class="gallery">
+    <div class="title">
+        {{ t['galeria']|raw }}
+    </div>
+    <div class="row">
+        {% for  image in entry.galeria.all() %}
+        <a href="{{ image.url }}" data-fancybox="crew-gallery" data-caption="{{ image.title }}">
+            <img src="{{image.url}}" alt="{{image.title}}" >
+            {% if loop.index==4 and loop.length>4 %}
+            <span class="abs_number">+{{ loop.length-4 }}</span>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% embed '_components/blocks/partners' %}{% endembed %}
+    
+{% endblock %}
