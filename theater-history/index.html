@@ -1,0 +1,58 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+    {% set _historyList = craft.entries.section('szinhaztortenet') %}
+
+    <section class="crew_page text-page history-page">
+        <div class="left">
+            <h1>{{ t['Színháztörténet']|raw }}</h1>
+
+            <div class="history-handle-list">
+                {% if _historyList is not empty %}
+                    {% for _history in _historyList %}
+                           <a href="javascript:;" class="{% if loop.first %}_active{% endif %}" data-id="{{ _history.id }}">
+                                {% if _history.szinhazKep is not empty %}
+                                    {% set _historyImageUrl = _history.szinhazKep is not empty ? _history.szinhazKep.one().url : '' %}
+                                    {% set _historyImageAlt = _history.szinhazKep is not empty ? _history.szinhazKep.one().title : '' %}
+                                    <img src="{{ _historyImageUrl }}" alt="{{ _historyImageAlt }} - {{ settings.pageName }}"/>
+                                {% endif %}
+                                <span>{{ _history.title }}</span>
+                           </a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="right">
+            <div class="history-handle-elems">
+                {% if _historyList is not empty %}
+                    {% for _history in _historyList %}
+                        <div class="history-handle-elem {% if loop.first %}_active{% endif %}" id="history-elem--{{ _history.id }}">
+                            <div class="matrix-content">
+                                {% if _history.contentMatrix is not empty %}
+                                    {% for _matrixElem in _history.contentMatrix %}
+                                        {# _matrixElem.type #}
+                                        {% switch _matrixElem.type %}
+                                            {% case 'matrixContent' %}
+                                                {% embed '_components/segments/matrix/content' %}{% endembed %}
+                                        {% endswitch %}
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            {% embed '_components/blocks/matrix' %}{% endembed %}
+        </div>
+    </section>
+
+    <!-- PARTNERS SLIDER -->
+        <div class="partners-wrapper">
+            {% embed '_components/blocks/partners' %}{% endembed %}
+        </div>
+    <!-- /PARTNERS SLIDER -->
+
+{% endblock %}
