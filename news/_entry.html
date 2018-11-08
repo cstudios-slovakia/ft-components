@@ -1,0 +1,41 @@
+{% extends "_layout" %}
+
+{% block content %}
+
+<section class="news entry news-index-entry">
+    <div class="left">
+        <a href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/news']|raw }}" class="btn btn-gradient btn-back">
+            <span>{{ t['vissza']|raw }}</span>
+        </a>
+    </div>
+    <div class="center">
+        <strong>{{ entry.title }}</strong>
+        <span>{{ entry.postDate|date("d. F Y") }}</span>
+
+        {% if entry.tartalom is not empty %}
+            {% for _elem in entry.tartalom.all() %}
+
+                {% switch _elem.type %}
+
+                {% case "paragrafus" %}
+                    {{ _elem.tartalom }}
+                {% case "nagyKep" %}
+                    {% embed '_components/segments/matrix/big-image' %}{% endembed %}
+                {% case "matrixGaleria" %}
+                    {% if  _elem.keplista is not empty %}
+                        {% embed '_components/segments/matrix/matrix-galeria' %}{% endembed %}
+                    {% endif %}
+                {% endswitch %}
+
+            {% endfor %}
+        {% endif %}
+
+        <a href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/news']|raw }}" class="btn btn-gradient">
+            <span>{{ t['vissza']|raw }}</span>
+        </a>
+    </div>
+</section>
+
+{% embed '_components/blocks/partners' %}{% endembed %}
+
+{% endblock %}
