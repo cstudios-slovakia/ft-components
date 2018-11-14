@@ -1,0 +1,21 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+    <section class="crew_page text-page visible-left">
+        <div class="left">
+            <h1>{{ t['Közlemények']|raw }}</h1>
+        </div>
+        <div class="right">
+            {% embed '_components/blocks/matrix' %}{% endembed %}
+        </div>
+    </section>
+
+    <!-- PARTNERS SLIDER -->
+        <div class="partners-wrapper">
+            {% embed '_components/blocks/partners' %}{% endembed %}
+        </div>
+    <!-- /PARTNERS SLIDER -->
+
+{% endblock %}
