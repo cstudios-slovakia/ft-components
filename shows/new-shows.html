@@ -1,0 +1,73 @@
+{% extends "_layout" %}
+
+{% block content %}
+
+    {% set filter_year = null %}
+    {% set filter_month = null %}
+
+<section class="news show_list_container visible-left">
+    <div class="left">
+        <h1>{{ t['Új bemutatók']|raw }}</h1>
+    </div>
+    <div class="right">
+
+        {% set _today = "now"|date("m/d/Y") %}
+        {% set params2 = {
+            section : 'playList',
+            limit : '6',
+            order: 'id desc',
+            ujBemutatok: 1
+        } %}
+
+        {% set latest_shows = craft.entries(params2) %}
+
+        {% paginate latest_shows.orderBy('id desc').limit(6) as pageInfo, pageEntries %}
+
+        {% for _show in pageEntries %}
+            <div class="row {% if loop.last %}_last{% endif %} ">
+                {% if _show.playPoster is not empty %}
+                    {% if _show.playPoster is not empty %}
+                        <img src="{{ _show.playPoster.one().url }}" alt="{{ _show.playPoster.one().title }} - {{ settings.pageName }}">
+                    {% endif %}
+                {% else %}
+                    <img src="{{  settings.baseUrl ~ 'assets/images/show_cover_default.jpg' }}" alt="{{ _show.title }} - {{ settings.pageName }}">
+                {% endif %}
+                <div class="column">
+                    <strong>{{ _show.title }}</strong>
+
+                    {% if _show.rendezo is not empty %}
+                        <div class="author">{{ _show.rendezo.one().title }}</div>
+                    {% endif %}
+
+                    <p>{{ _show.intro }}</p>
+                </div>
+                <a href="{{ _show.url }}" class="btn btn-gradient"><span>{{ t['Bővebben']|raw }}</span></a>
+            </div>
+        {% endfor %}
+
+        <div class="pagination_cont">
+            {% if pageInfo.prevUrl %}<a class="arrow back" href="{{ pageInfo.prevUrl }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}"></a>{% endif %}
+            {% for page, url in pageInfo.getPrevUrls(2) %}
+            <a href="{{ url }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}">{{ page }}</a>
+            {% endfor %}
+
+            <a class="current">{{ pageInfo.currentPage }}</a>
+
+            {% for page, url in pageInfo.getNextUrls(2) %}
+            <a href="{{ url }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}">{{ page }}</a>
+            {% endfor %}
+
+            {% if pageInfo.totalPages - pageInfo.currentPage > 2 %}
+            <a>...</a>
+
+            <a href="{{ pageInfo.lastUrl }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}">{{pageInfo.totalPages}}</a>
+            {% endif %}
+            {% if pageInfo.nextUrl %}<a class="arrow next" href="{{ pageInfo.nextUrl }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}"></a>{% endif %}
+        </div>
+    </div>
+
+</section>
+
+{% embed '_components/blocks/partners' %}{% endembed %}
+
+{% endblock %}
