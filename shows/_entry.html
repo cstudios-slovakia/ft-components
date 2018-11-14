@@ -1,0 +1,346 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+    {% set _showEntry   = null %}
+    {% set _title       = null %}
+    {% set _gallery     = null %}
+    {% set _video       = null %}
+    {% set _name        = null %}
+    {% set _posterUrl   = null %}
+    {% set _matrix      = null %}
+    {% set _firstPlay   = null %}
+    {% set _firstShows  = null %}
+    {% set szereposztasMatrix = null %}
+    {% set munkakorMatrix     = null %}
+    {% set _start             = null %}
+    {% set _elsoFelvonas      = null %}
+    {% set _masodikFelvonas   = null %}
+    {% set _harmadikFelvonas  = null %}
+    {% set _teljesHossz       = null %}
+    {% set _eloadasVege       = null %}
+    {% set _mufaj             = null %}
+    {% set _jegyar            = null %}
+    {% set _varos             = null %}
+
+    {% if entry.type == 'eloadas' %}
+        {% set _title = entry.nev %}
+        {% set _jegyar = entry.jegyar %}
+        {% if entry.szindarab is not empty %}
+            {% set _showEntry = entry.szindarab.one() %}
+
+            {% set _showCoverUrl = _showEntry.playCover is not empty ? _showEntry.playCover.one().url('showEntryCoverTransform') : settings.baseUrl ~ 'assets/images/show_default_image.jpg' %}
+            {% set _showCoverAlt = _showEntry.playCover is not empty ? _showEntry.playCover.one().title : '' %}
+
+            {% set _showCoverDetailUrl = _showEntry.playDetailCover is not empty ? _showEntry.playDetailCover.one().url('showEntryCoverTransform') : _showCoverUrl %}
+            {% set _showCoverDetailAlt = _showEntry.playDetailCover is not empty ? _showEntry.playDetailCover.one().title : _showCoverAlt %}
+
+            {% if _showEntry.playGallery is not empty %}
+                {% set _gallery =  _showEntry.playGallery %}
+            {% endif %}
+
+            {% if _showEntry.recommendatory is not empty %}
+                {% set _video = _showEntry.recommendatory %}
+            {% endif %}
+
+            {% if entry.rendezo is not empty %}
+                {% set _name = entry.rendezo.one().title %}
+            {% endif %}
+
+            {% if _showEntry.playPoster is not empty %}
+                {% set _posterUrl = _showEntry.playPoster is not empty ? _showEntry.playPoster.one().url('showEntryPosterTransform') : settings.baseUrl ~ 'assets/images/show_cover_default.jpg' %}
+                {% set _posterAlt = _showEntry.playPoster.one().title %}
+            {% endif %}
+
+            {% if _showEntry.contentMatrix is not empty %}
+                {% set _matrix = _showEntry.contentMatrix %}
+            {% endif %}
+
+            {% if _showEntry.mufaj is not empty %}
+                {% set _mufaj = _showEntry.mufaj.one() %}
+            {% endif %}
+
+            {% set _firstEloadas  = entry %}
+            {% set _firstPlay  = _showEntry %}
+            {% set _firstShows = craft.entries.section('eloadasokLista').search('szindarab:' ~ _showEntry)  %}
+
+            {% if _showEntry.szereposztas is not empty %}
+                {% set szereposztasMatrix = _showEntry.szereposztas %}
+            {% endif %}
+
+            {% set _varos = entry.varos %}
+
+            {% if _showEntry.stabtagok is not empty %}
+                {% set munkakorMatrix = _showEntry.stabtagok %}
+            {% endif %}
+
+            {% set _start             = entry.kezdes is not empty ? entry.kezdes|date('H:i') : '-' %}
+            {% set _elsoFelvonas      = _showEntry.elsoFelvonas is not empty ? _showEntry.elsoFelvonas : '-' %}
+            {% set _masodikFelvonas   = _showEntry.masodikFelvonas is not empty ? _showEntry.masodikFelvonas : '-' %}
+            {% set _harmadikFelvonas  = _showEntry.harmadikFelvonas is not empty ? _showEntry.harmadikFelvonas : '-' %}
+            {% set _teljesHossz       = _showEntry.teljesHossz is not empty ? _showEntry.teljesHossz : '-' %}
+            {% set _eloadasVege       = entry.eloadasVege is not empty ? entry.eloadasVege|date('H:i') : '-' %}
+        {% endif %}
+    {% else %}
+        {% set _showEntry = entry %}
+        {% set _title = entry.title %}
+        {% set _showCoverUrl = entry.playCover is not empty ? entry.playCover.one().url('showEntryCoverTransform') : settings.baseUrl ~ 'assets/images/show_default_image.jpg' %}
+        {% set _showCoverAlt = entry.playCover is not empty ? entry.playCover.one().title : '' %}
+
+        {% set _showCoverDetailUrl = _showEntry.playDetailCover is not empty ? _showEntry.playDetailCover.one().url('showEntryCoverTransform') : _showCoverUrl %}
+        {% set _showCoverDetailAlt = _showEntry.playDetailCover is not empty ? _showEntry.playDetailCover.one().title : _showCoverAlt %}
+
+        {% if entry.playGallery is not empty %}
+            {% set _gallery =  entry.playGallery %}
+        {% endif %}
+
+        {% if entry.recommendatory is not empty %}
+            {% set _video = entry.recommendatory %}
+        {% endif %}
+
+        {% if entry.rendezo is not empty %}
+            {% set _name = entry.rendezo.one().title %}
+        {% else %}
+            {% set _name = entry.playAuthor %}
+        {% endif %}
+
+        {% if entry.playPoster is not empty %}
+            {% set _posterUrl = entry.playPoster is not empty ? entry.playPoster.one().url('showEntryPosterTransform') : settings.baseUrl ~ 'assets/images/show_cover_default.jpg'  %}
+            {% set _posterAlt = entry.playPoster.one().title %}
+        {% else %}
+            {% set _posterUrl = entry.playPoster is not empty ? entry.playPoster.one().url('showEntryPosterTransform') : settings.baseUrl ~ 'assets/images/show_cover_default.jpg'  %}
+            {% set _posterAlt = '' %}
+        {% endif %}
+
+        {% if entry.contentMatrix is not empty %}
+            {% set _matrix = entry.contentMatrix %}
+        {% endif %}
+
+        {% if entry.mufaj is not empty %}
+            {% set _mufaj = entry.mufaj.one() %}
+        {% endif %}
+
+        {% if _showEntry.szereposztas is not empty %}
+            {% set szereposztasMatrix = _showEntry.szereposztas %}
+        {% endif %}
+
+        {% if _showEntry.stabtagok is not empty %}
+            {% set munkakorMatrix = _showEntry.stabtagok %}
+        {% endif %}
+
+        {% set _firstPlay       = entry %}
+        {% set _firstShows      = craft.entries.section('eloadasokLista').search('szindarab:' ~ entry)  %}
+        {% set _firstEloadas    = _firstShows.one() %}
+
+        {% set _elsoFelvonas      = entry.elsoFelvonas is not empty ? entry.elsoFelvonas : '-' %}
+        {% set _masodikFelvonas   = entry.masodikFelvonas is not empty ? entry.masodikFelvonas : '-' %}
+        {% set _harmadikFelvonas  = entry.harmadikFelvonas is not empty ? entry.harmadikFelvonas : '-' %}
+        {% set _teljesHossz       = entry.teljesHossz is not empty ? entry.teljesHossz : '-' %}
+    {% endif %}
+
+    <div class="show-entry" data-type="{{ entry.type }}">
+        <div class="show-header {% if _gallery is not empty %}_gallery{% endif %} {% if _video is not empty %}_video{% endif %}">
+            {% if _showCoverDetailUrl is not empty %}
+                <div class="cover">
+                    <img src="{{ _showCoverDetailUrl }}" alt="{{ _showCoverDetailAlt }} - {{ settings.pageName }}"/>
+                </div>
+            {% endif %}
+
+            {% if _gallery is not empty %}
+                <div class="gallery-container">
+                    {% set _galleryImageUrl = _gallery.one().url('showEntryGalleryTransform') %}
+                    {% set _galleryImageAlt = _gallery.one().title %}
+                    <img src="{{ _galleryImageUrl }}" alt="{{ _galleryImageAlt }} - {{ _title }} - {{ settings.pageName }}"/>
+                    <div data-fancybox="show-gallery" href="{{ _galleryImageUrl }}" data-caption="{{ _galleryImageAlt }}">
+                        <span>{{ t['Galéria'] }}</span>
+                        {% for _image in _gallery %}
+                            {% if not loop.first %}
+                                <a data-fancybox="show-gallery" href="{{ _image.url }}" data-caption="{{ _image.title }}">
+                                    <img  src="{{ _image.url }}" alt="{{ _image.title }} - {{ _title }} - {{ settings.pageName }}">
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if _video is not empty %}
+                <div class="video-container">
+                    {% set _youtubeVideoID = _video | youtubeId %}
+                    <a data-fancybox="{{ _youtubeVideoID }}" href="{{ _video }}">
+                        <img src="http://img.youtube.com/vi/{{ _youtubeVideoID }}/0.jpg" alt="{{ _youtubeVideoID }} - {{ settings.pageName }}"/>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="show-body">
+
+            <div class="head">
+                {% if _showEntry is not empty %}
+                    <a href="{{ _showEntry.url }}" class="title">{{ _title }}</a>
+                {% else %}
+                    <div class="title">{{ _title }}</div>
+                {% endif %}
+                <div class="name">{{ _name }}</div>
+
+                {% if _mufaj is not empty %}
+                    <div class="show-type">
+                        <div>{{ _mufaj.title }}</div>
+                    </div>
+                {% endif %}
+
+                {% if _jegyar is not empty %}
+                    <div class="show-type price">
+                        <div><strong>{{ t['Jegyár'] }}</strong>: {{ _jegyar }} &euro;</div>
+                    </div>
+                {% endif %}
+
+                {% if _posterUrl is not empty %}
+                    <div class="poster">
+                        <div class="poster-title">{{ t['Poster'] }}</div>
+                        <img src="{{ _posterUrl }}" alt="{{ _posterAlt }} - {{ _title }} - {{ settings.pageName }} "/>
+                    </div>
+                {% else %}
+                    <div class="poster">
+                        <div class="poster-title">{{ t['Poster'] }}</div>
+                        <img src="{{  settings.baseUrl ~ 'assets/images/show_cover_default.jpg' }}" alt="{{ _title }} - {{ settings.pageName }}">
+                    </div>
+                {% endif %}
+
+
+                    <div class="show-details" data-id="{{ entry.id }}">
+                        {% if _varos is not empty %}
+                            <div class="block">
+                                <div class="title">{{ t['Város'] }}</div>
+                                <div class="value">{% if _varos is not empty %}{{ _varos }}{% else %}-{% endif %}</div>
+                            </div>
+                        {% endif %}
+
+                        {% if _start is not empty %}
+                            <div class="block">
+                                <div class="title">{{ t['Kezdés'] }}</div>
+                                <div class="value">{% if _start is not empty %}{{ _start }}{% else %}-{% endif %}</div>
+                            </div>
+                        {% endif %}
+
+                        <div class="block">
+                            <div class="title">{{ t['Első felvonás'] }}</div>
+                            <div class="value">{% if _elsoFelvonas is not empty %}{{ _elsoFelvonas }}{% else %}-{% endif %}</div>
+                        </div>
+
+                        <div class="block">
+                            <div class="title">{{ t['Második felvonás'] }}</div>
+                            <div class="value">{% if _masodikFelvonas is not empty %}{{ _masodikFelvonas }}{% else %}-{% endif %}</div>
+                        </div>
+
+                         <div class="block">
+                            <div class="title">{{ t['Harmadik felvonás'] }}</div>
+                            <div class="value">{% if _harmadikFelvonas is not empty %}{{ _harmadikFelvonas }}{% else %}-{% endif %}</div>
+                        </div>
+
+                        <div class="block">
+                            <div class="title">{{ t['Teljes hossz'] }}</div>
+                            <div class="value">{% if _teljesHossz is not empty %}{{ _teljesHossz }}{% else %}-{% endif %}</div>
+                        </div>
+
+                        {% if _eloadasVege is not empty %}
+                            <div class="block">
+                                <div class="title">{{ t['Előadás vége'] }}</div>
+                                <div class="value">{% if _eloadasVege is not empty %}{{ _eloadasVege }}{% else %}-{% endif %}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+            </div>
+
+            <div class="info">
+                {% if _showEntry is not empty %}
+                    <div class="description matrix-content">
+                        <div class="matrixContent">
+                            <p>{{ _showEntry.intro }}</p>
+                            <br>
+                        </div>
+                    </div>
+                {% endif %}
+
+
+                {% embed '_components/blocks/show-matrix' %}{% endembed %}
+
+                {% if szereposztasMatrix is not empty %}
+                    <div class="role-container">
+                        {% for _role in szereposztasMatrix %}
+                            <div class="role">
+                                <div class="role-name">{{ _role.szerep }}</div>
+
+                                <div class="crew-name">
+                                    {% if _role.szinesz is not empty  %}
+                                        {% for _szinesz in _role.szinesz %}
+                                            <a href="{{ _szinesz.url }}" class="crew-name">{{ _szinesz.title }} {{ _szinesz.nevSuffix }}</a>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="crew-name _empty">-</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if munkakorMatrix is not empty %}
+                    <div class="role-container">
+                        {% for _role in munkakorMatrix %}
+                            <div class="role">
+                                {% if _role.munkakor is not empty  %}
+                                    {% set _job = _role.munkakor.one() %}
+                                    <div class="role-name">{{ _job.title }}</div>
+                                {% endif %}
+
+                                <div class="crew-name">
+                                    {% if _role.munkatars is not empty  %}
+                                        {% for _crewMember in _role.munkatars %}
+                                            {% set _crew = _crewMember %}
+                                            <a href="{{ _crew.url }}" class="crew-name">{{ _crew.title }} {{ _crew.nevSuffix }}</a>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="crew-name _empty">-</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+
+                {% endif %}
+
+
+                <div class="role-container"></div>
+
+                <!-- -->
+                <div class="message">
+                    <div>SZEREPOSZTÁS VÁLTOZÁSÁNAK JOGÁT A SZÍNHÁZ FENNTARTJA!</div>
+                </div>
+                <!-- / -->
+
+            </div>
+
+            <div class="additional index-header">
+                <!-- SHOW TIMELINE -->
+                    <div id="index-timeline">
+                        <!-- LIST -->
+                            <div class="timeline-list _entry">
+                                 <div class="title">{{ t['Időpontok'] }}</div>
+                                {% set noLimit = true %}
+                                {% embed '_components/segments/header-timeline-elem' %}{% endembed %}
+                            </div>
+                        <!-- /LIST -->
+                    </div>
+                <!-- /SHOW TIMELINE -->
+            </div>
+
+        </div>
+    </div>
+
+{% embed '_components/blocks/partners' %}{% endembed %}
+
+{% endblock %}
