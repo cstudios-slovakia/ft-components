@@ -1,0 +1,109 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+    <section class="news shows_page actual-shows">
+        <div class="left">
+            <h1>{{ t['Műsor']|raw }}</h1>
+        </div>
+
+        <div class="right inner">
+            <div class="show-list">
+                {% set _today = "now"|date("m/d/Y") %}
+                {% set params = {
+                    section : 'eloadasokLista',
+                    datum: '>=' ~  _today|date('U'),
+                    limit : '12',
+                    order: 'datum asc'
+                } %}
+
+                {% set _showsList = craft.entries(params) %}
+
+                {% paginate _showsList as pageInfo, pageEntries %}
+                {% set _datum     = '' %}
+                {% set _opened    = 0 %}
+                {% if pageEntries is not empty %}
+                    {% for _show in pageEntries %}
+                        {% if _datum == _show.datum|date("d. F Y") %}
+                            {% embed '_components/segments/show-elem' %}{% endembed %}
+                        {% else %}
+                            {% if _datum == '' %}
+                                {% set _datum = _show.datum|date("d. F Y") %}
+                                {% set _opened = 1 %}
+                                <div class="group">
+                                    <div class="abs-date">
+                                        <div>
+                                            <div>{{ _show.datum|date('Y') }}</div>
+                                            <div>{{ _show.datum|date('d. F') }}</div>
+                                            <div>{{ _show.datum|date('l') }}</div>
+                                        </div>
+                                    </div>
+                                    {% embed '_components/segments/show-elem' %}{% endembed %}
+                            {% else %}
+                                {% set _opened = 0 %}
+                                </div>
+
+                                {% if not loop.last %}
+                                    {% set _opened = 1 %}
+                                    <div class="group">
+                                        <div class="abs-date">
+                                            <div>
+                                                <div>{{ _show.datum|date('Y') }}</div>
+                                                <div>{{ _show.datum|date('d. F') }}</div>
+                                                <div>{{ _show.datum|date('l') }}</div>
+                                            </div>
+                                        </div>
+                                        {% embed '_components/segments/show-elem' %}{% endembed %}
+                                {% else %}
+                                    <div class="group">
+                                        <div class="abs-date">
+                                            <div>
+                                                <div>{{ _show.datum|date('Y') }}</div>
+                                                <div>{{ _show.datum|date('d. F') }}</div>
+                                                <div>{{ _show.datum|date('l') }}</div>
+                                            </div>
+                                        </div>
+                                        {% embed '_components/segments/show-elem' %}{% endembed %}
+                                    </div>
+                                {% endif %}
+
+                            {% endif %}
+                        {% endif %}
+
+                        {% if _opened == 1 and loop.last %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                <div class="pagination_cont">
+                    {% if pageInfo.prevUrl %}
+                        <a class="arrow back" href="{{ pageInfo.prevUrl }}"></a>
+                    {% endif %}
+                    {% for page, url in pageInfo.getPrevUrls(2) %}
+                        <a href="{{ url }}">{{ page }}</a>
+                    {% endfor %}
+
+                    <a class="current">{{ pageInfo.currentPage }}</a>
+
+                    {% for page, url in pageInfo.getNextUrls(2) %}
+                        <a href="{{ url }}">{{ page }}</a>
+                    {% endfor %}
+
+                    {% if pageInfo.totalPages - pageInfo.currentPage > 2 %}
+                        <a>...</a>
+
+                        <a href="{{ pageInfo.lastUrl }}">{{pageInfo.totalPages}}</a>
+                    {% endif %}
+                    {% if pageInfo.nextUrl %}
+                        <a class="arrow next" href="{{ pageInfo.nextUrl }}"></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% embed '_components/blocks/partners' %}{% endembed %}
+
+{% endblock %}
