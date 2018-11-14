@@ -1,0 +1,53 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+    <section class="crew_page text-page ticket-page">
+        <div class="left">
+            <h1>{{ t['Előadások időtartama']|raw }}</h1>
+        </div>
+        <div class="right">
+
+            <!-- TABLES -->
+                <div class="tables">
+
+                    {% if entry.idotartamTablazat is not empty %}
+                        <table>
+                            <thead>
+                                <th>{{ t['Előadás'] }}</th>
+                                <th>{{ t['Kezdés'] }}</th>
+                                <th>{{ t['1. felvonás'] }}</th>
+                                <th>{{ t['2. felvonás'] }}</th>
+                                <th>{{ t['3. felvonás'] }}</th>
+                                <th>{{ t['Teljes hossz'] }}</th>
+                                <th>{{ t['Előadás vége'] }}</th>
+                            </thead>
+                            {% for row in entry.idotartamTablazat %}
+                                <tr>
+                                    <td>{{ row.eloadas }}</td>
+                                    <td>{{ row.kezdes }}</td>
+                                    <td>{{ row.felvonas1 }}</td>
+                                    <td>{{ row.felvonas2 }}</td>
+                                    <td>{{ row.felvonas3 }}</td>
+                                    <td>{{ row.teljesHossz }}</td>
+                                    <td>{{ row.eloadasVege }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+
+                </div>
+            <!-- /TABLES -->
+
+            {% embed '_components/blocks/matrix' %}{% endembed %}
+        </div>
+    </section>
+
+    <!-- PARTNERS SLIDER -->
+        <div class="partners-wrapper">
+            {% embed '_components/blocks/partners' %}{% endembed %}
+        </div>
+    <!-- /PARTNERS SLIDER -->
+
+{% endblock %}
