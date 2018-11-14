@@ -1,0 +1,90 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+<section class="news shows_page visible-left">
+    <div class="left">
+        <h1>{{ t['Előadások']|raw }}</h1>
+
+        {% set currentYear  = now.year %}
+        {% set currentMonth = now.month %}
+
+        {% set filter_year  = craft.request.getParam('y') is not empty ? craft.request.getParam('y') : currentYear %}
+        {% set filter_month = craft.request.getParam('m') is not empty ? craft.request.getParam('m') : ''  %}
+        {% set filter_type  = craft.request.getParam('t') is not empty ? craft.request.getParam('t') : ''  %}
+
+        {% set _showsMonthsList = craft.entries.section('eloadasokLista').orderBy('datum asc').szinpad(filter_type) %}
+        {% if _showsMonthsList is not empty %}
+            {% for year, entriesInYear in _showsMonthsList | group("datum.year") %}
+                <a class="{% if filter_year is not empty and filter_year == year %} _active {% endif %}" href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/predstavenia/mesiac']|raw }}?t={{ filter_type }}&y={{ year }}">{{ year }}</a>
+                {% for month, entriesInMonth in entriesInYear | group("datum|date('F')") %}
+                    <a class="month {% if filter_year is not empty and filter_year == year %} _visible {% endif %} {% if filter_month is not empty and filter_month == month %} _active {% endif %}" href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/predstavenia/mesiac']|raw }}?t={{ filter_type }}&y={{ year }}#{{ month }}">{{ month }}</a>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="right">
+        <div class="shows_list _updated">
+            {% set _showsMonthsList = craft.entries.section('eloadasokLista').orderBy('datum asc').szinpad(filter_type) %}
+            {% set _currentMonth = '' %}
+            {% if _showsMonthsList is not empty %}
+                {% for _show in _showsMonthsList %}
+                    {% set _entryDateYear = _show.datum|date('Y') %}
+                    {% set _entryDateMonth = _show.datum|date('F') %}
+
+                    {% if filter_year == _entryDateYear %}
+                        {% if _show is not empty %}
+                            {% if _currentMonth != _entryDateMonth %}
+                                <h2 class="month-title" id="{{ _entryDateMonth }}">{{ _entryDateMonth }}</h2>
+                                {% set _currentMonth = _entryDateMonth %}
+                            {% endif %}
+                        {% endif %}
+
+                        <div class="show-entry">
+                            {% if _show.datum is not empty %}
+                                <div class="name">
+                                    <span class="day">{{ _show.datum|date("l") }}</span>
+                                    <span>{{ _show.datum|date("d. F Y") }} - {{ _show.kezdes|date("H:i") }}</span>
+                                </div>
+                            {% else %}
+                                <div class="name">-</div>
+                            {% endif %}
+
+                            <div class="title">
+                                <span>{{ _show.title }}</span>
+                                    <span class="ticket">
+                                        {% if _show.berlet is not empty %}
+                                            <small>{{ _show.berlet.one().title }}</small>
+                                        {% endif %}
+                                        {% if _show.szinpad is not empty %}
+                                            <small>{{ _show.szinpad.label }}</small>
+                                        {% endif %}
+                                    </span>
+                            </div>
+
+                            <div class="footer">
+                                <div>
+                                    <a href="{{ _show.url }}" class="btn btn-gradient">
+                                        <span>{{ t['Bővebben'] }}</span>
+                                    </a>
+                                    {% if _show.jegyvasarlas is not empty %}
+                                        <a href="{{ _show.jegyvasarlas }}" class="btn btn-red">
+                                            <span>{{ t['Jegyvásárlás'] }}</span>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+
+{% embed '_components/blocks/partners' %}{% endembed %}
+
+{% endblock %}
