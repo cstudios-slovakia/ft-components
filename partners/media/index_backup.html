@@ -1,0 +1,30 @@
+{% extends "_layout" %}
+
+{% block content %}
+
+<section class="crew_page partners_page mediapartners visible-left">
+    <div class="left">
+        <h1>{{ t['Médiapartnerek']|raw }}</h1>
+    </div>
+    <div class="right">
+        {% set _partners = craft.entries.section('mediapartnerek') %}
+        {% if _partners is not empty %}
+            <div class="partners-list">
+                <div class="list">
+                    {% for _partner in _partners %}
+                        <a href="{% if _partner.partnerUrl is not empty %}{{ _partner.partnerUrl }}{% else %}javascript:;{% endif %}" class="{% if _partner.partnerUrl is empty %}_empty{% endif %}">
+                            {% if _partner.partnerKep is not empty %}
+                                {% set _imgUrl = _partner.partnerKep is not empty ? _partner.partnerKep.one().url : '' %}
+                                {% set _imgAlt = _partner.partnerKep is not empty ? _partner.partnerKep.one().title : '' %}
+                                <img src="{{ _imgUrl }}" alt="{{ _imgAlt }} - {{ settings.pageName }}"/>
+                            {% endif %}
+                            <div class="name">{{ _partner.title }}</div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
