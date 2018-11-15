@@ -1,0 +1,97 @@
+{% extends "_layout" %}
+
+{% block content %}
+
+<section class="news _updated news-index">
+    <div class="left">
+        <h1>{{ t['Hirek']|raw }}</h1>
+
+        {% set news= craft.entries.section('hirek').orderBy('postDate desc') %}
+
+        {% if news is not empty %}
+        {% set year='' %}
+        {% set month='' %}
+            {% set filter_year= craft.app.request.getParam('y') is not empty ? craft.app.request.getParam('y') : ''%}
+            {% set filter_month= craft.app.request.getParam('m') is not empty ? craft.app.request.getParam('m') : ''%}
+            {% for new in news.all() %}
+
+            {% set year_current= new.postDate|date('Y') %}
+            {% set month_current= new.postDate|date('F') %}
+
+            {% if year!=year_current %}
+                {% set year=year_current %}
+                {% set month=month_current %}
+                <a class="{% if filter_year is not empty and filter_year==year %} _active {% endif %}" href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/news']|raw }}?y={{year}}">{{ year }}</a>
+                <a class="month {% if filter_year is not empty and filter_year==year %} _visible {% endif %} {% if filter_month is not empty and filter_month==new.postDate|date('m') %} _active {% endif %}" href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/news']|raw }}?y={{year}}&m={{new.postDate|date('m')}}">{{ new.postDate|date('F') }}</a>
+            {% else %}
+                {% if month!=month_current %}
+                    <a class="month {% if filter_year is not empty and filter_year==year %} _visible {% endif %} {% if filter_month is not empty and filter_month==new.postDate|date('m') %} _active {% endif %}" href="{{ settings.baseUrl }}{{ _locale }}{{ t['link/news']|raw }}?y={{year}}&m={{new.postDate|date('m')}}">{{ new.postDate|date('F') }}</a>
+                    {% set month=month_current %}
+                {% endif %}
+            {% endif %}
+
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="right">
+
+        {% if filter_year is not empty %}
+            {% if filter_month is not empty %}
+                {% set firstDay = date(filter_year ~ '-' ~ filter_month ~ '-01') %}
+                {% set lastDay = firstDay|date_modify('first day of next month') %}
+            {% else %}
+                {% set firstDay = date(filter_year ~ '-01-01') %}
+                {% set lastDay = date(filter_year ~ '-12-31') %}
+            {% endif %}
+
+            {% set postDateParam = ['and', '>= ' ~ firstDay|date('c'), '< ' ~ lastDay|date('c')] %}
+
+            {% set filtered_news = craft.entries({
+                section: 'hirek',
+                postDate: postDateParam,
+            }) %}
+
+        {% else %}
+            {% set filtered_news=craft.entries.section('hirek') %}
+        {% endif %}
+
+        {% paginate filtered_news.orderBy('postDate desc').limit(6) as pageInfo, pageEntries %}
+
+        {% for cikk in pageEntries %}
+            <div class="row {% if loop.last %}_last{% endif %} ">
+                <img src="{{ cikk.cikkKep.one().url }}" alt="{{ cikk.cikkKep.one().title }}">
+                <div class="column">
+                    <strong>{{ cikk.title }}</strong>
+                    <span>{{ cikk.postDate|date("d. F Y") }}</span>
+                    <p>{{ cikk.articleIntro }}</p>
+                </div>
+                <a href="{{ cikk.url }}" class="btn btn-gradient"><span>{{ t['Bővebben']|raw }}</span></a>
+            </div>
+        {% endfor %}
+
+        <div class="pagination_cont">
+            {% if pageInfo.prevUrl %}<a class="arrow back" href="{{ pageInfo.prevUrl }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}"></a>{% endif %}
+            {% for page, url in pageInfo.getPrevUrls(2) %}
+            <a href="{{ url }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}">{{ page }}</a>
+            {% endfor %}
+
+            <a class="current">{{ pageInfo.currentPage }}</a>
+
+            {% for page, url in pageInfo.getNextUrls(2) %}
+            <a href="{{ url }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}">{{ page }}</a>
+            {% endfor %}
+
+            {% if pageInfo.totalPages - pageInfo.currentPage > 2 %}
+            <a>...</a>
+
+            <a href="{{ pageInfo.lastUrl }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}">{{pageInfo.totalPages}}</a>
+            {% endif %}
+            {% if pageInfo.nextUrl %}<a class="arrow next" href="{{ pageInfo.nextUrl }}{% if filter_year is not empty %}?y={{filter_year}}{% endif %}{% if filter_month is not empty %}&m={{filter_month}}{% endif %}"></a>{% endif %}
+        </div>
+    </div>
+
+</section>
+
+{% embed '_components/blocks/partners' %}{% endembed %}
+
+{% endblock %}
