@@ -1,0 +1,30 @@
+{% extends "_layout" %}
+{% set seo = entry.seo %}
+
+{% block content %}
+
+    <section class="crew_page text-page visible-left">
+        <div class="left">
+            <h1>{{ t['Megrendelők']|raw }}</h1>
+        </div>
+        <div class="right">
+            {% set _megrendelokLista = craft.entries.section('megrendelokLista') %}
+            {% if _megrendelokLista is not empty %}
+                <div class="matrix-content">
+                    {% for _megrendelo in _megrendelokLista %}
+                        <a href="{{ _megrendelo.letoltendoFajlField.one().url }}" class="file" target="_blank">
+                            <span>{{ _megrendelo.title }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- PARTNERS SLIDER -->
+        <div class="partners-wrapper">
+            {% embed '_components/blocks/partners' %}{% endembed %}
+        </div>
+    <!-- /PARTNERS SLIDER -->
+
+{% endblock %}
